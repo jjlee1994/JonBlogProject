@@ -1,0 +1,25 @@
+version: '3'
+
+services:
+  blog_project_db:
+    container_name: blog_project_db
+    image: postgres
+    restart: always
+    ports:
+      - '5432'
+    environment:
+      POSTGRES_PASSWORD: postgres
+  
+  blog_project:
+    container_name: blog_project
+    restart: always
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    command: python main.py
+    volumes:
+      - .:/BlogProject
+    ports:
+      - '6000:6000'
+    depends_on:
+      - blog_project_db
