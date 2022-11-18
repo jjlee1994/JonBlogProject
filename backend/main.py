@@ -12,6 +12,27 @@ def signup(User):
 
 @app.route('/login')
 def login(username, password):
+    '''
+        The login route for all current users on the system
+
+        Requests:
+            payload (JSON): {
+                'username' (str): The username of the user
+                'password' (str): The password of the user
+            }
+        
+        Response:
+            (200): User's authenticated
+                returns {
+                    'access-token' (str): The access token used by user to call additional API
+                } 
+            (400): User's name or password did not match
+            (404): User not found
+    
+    '''
+
+
+
     pass
 
 @app.route('/createpost')
