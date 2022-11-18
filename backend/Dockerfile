@@ -6,4 +6,4 @@ COPY requirements.txt /BlogProject/
 RUN pip install -r requirements.txt
 COPY . /BlogProject/
 
-EXPOSE 6000
+EXPOSE 5001
