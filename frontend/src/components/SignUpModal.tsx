@@ -1,4 +1,4 @@
-import { Card, Button, CardContent, TextField } from "@mui/material"
+import { Card, Button, CardContent, TextField, Typography } from "@mui/material"
 import Grid from '@mui/material/Unstable_Grid2';
 
 
@@ -14,10 +14,15 @@ function SignUpModal(){
         >
             <Card sx={{ minWidth: 275, maxWidth: 575 }} >
                 <CardContent >
-                    Sign Up Modal
+                    <Typography>
+                        Sign Up Modal
+                    </Typography>
                     <TextField id="username" label="Username" fullWidth margin="normal"/>
                     <TextField id="password" label="Password" fullWidth margin="normal"/>
                     <Button variant="contained" size="large"> Sign Up </Button>
+                    <Typography>
+                        Did you mean to <a href="/login">login</a> instead?
+                    </Typography>
                 </CardContent>
             </Card>
         </Grid>

@@ -7,18 +7,22 @@ import {
 import './App.css';
 import Home from './pages/Home';
 import Authentication from './pages/Authentication';
+import Navbar from './components/Navbar';
 
 function App() {
   return (
     <div className="App">
       <header className="App-header">
-        header
+        <Navbar/>
       </header>
-      <Routes>
-        <Route path="/" element={<Home/>}/>
-        <Route path="/login" element={<Authentication type="login"/>}/>
-        <Route path="/signup" element={<Authentication type="signup"/>}/>
-      </Routes>
+      <body>
+        <Routes>
+          <Route path="/" element={<Home/>}/>
+          <Route path="/login" element={<Authentication type="login"/>}/>
+          <Route path="/signup" element={<Authentication type="signup"/>}/>
+        </Routes>
+      </body>
+
     </div>
   );
 }
