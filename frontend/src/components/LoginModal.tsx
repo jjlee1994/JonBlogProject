@@ -1,11 +1,11 @@
 import { Card, Button, CardContent, TextField } from "@mui/material"
 import Grid from '@mui/material/Unstable_Grid2';
 
-function Login(){
-    // TODO: Username / Password Validations and Password Hiding
+
+function LoginModal(){
 
     return (
-        <div style={{textAlign: "center"}}>
+        <div>
             <Grid
                 container
                 justifyContent="space-evenly"
@@ -18,12 +18,14 @@ function Login(){
                         <TextField id="username" label="Username" fullWidth margin="normal"/>
                         <TextField id="password" label="Password" fullWidth margin="normal"/>
                         <Button variant="contained" size="large"> Login </Button>
+                        Not yet a user? <a href="/signup">sign up</a>
                     </CardContent>
                 </Card>
             </Grid>
-        </div>
+    </div>
     )
+
+
 }
 
-
-export default Login
+export default LoginModal

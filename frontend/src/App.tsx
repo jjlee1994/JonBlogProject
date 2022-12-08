@@ -6,7 +6,7 @@ import {
 
 import './App.css';
 import Home from './pages/Home';
-import Login from './pages/Login';
+import Authentication from './pages/Authentication';
 
 function App() {
   return (
@@ -16,7 +16,8 @@ function App() {
       </header>
       <Routes>
         <Route path="/" element={<Home/>}/>
-        <Route path="/login" element={<Login/>}/>
+        <Route path="/login" element={<Authentication type="login"/>}/>
+        <Route path="/signup" element={<Authentication type="signup"/>}/>
       </Routes>
     </div>
   );
