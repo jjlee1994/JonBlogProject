@@ -1,4 +1,4 @@
-import { Card, Button, CardContent, TextField } from "@mui/material"
+import { Card, Button, CardContent, TextField, Typography } from "@mui/material"
 import Grid from '@mui/material/Unstable_Grid2';
 
 
@@ -14,11 +14,18 @@ function LoginModal(){
             >
                 <Card sx={{ minWidth: 275, maxWidth: 575 }} >
                     <CardContent >
-                        Login Modal
+                        <Typography>
+                            Login Modal
+                        </Typography>
                         <TextField id="username" label="Username" fullWidth margin="normal"/>
                         <TextField id="password" label="Password" fullWidth margin="normal"/>
                         <Button variant="contained" size="large"> Login </Button>
-                        Not yet a user? <a href="/signup">sign up</a>
+                        <Typography>
+                            Not yet a user? <a href="/signup">sign up</a>
+                        </Typography>
+
+
+
                     </CardContent>
                 </Card>
             </Grid>
