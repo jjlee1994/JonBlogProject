@@ -11,7 +11,6 @@ function Authentication(props : Props){
 
     if (props.type === "login")
         return (
-
             <div style={{textAlign: "center"}}>
                 <LoginModal/>
             </div>

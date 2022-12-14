@@ -23,13 +23,10 @@ function LoginModal(){
                         <Typography>
                             Not yet a user? <a href="/signup">sign up</a>
                         </Typography>
-
-
-
                     </CardContent>
                 </Card>
             </Grid>
-    </div>
+        </div>
     )
 
 

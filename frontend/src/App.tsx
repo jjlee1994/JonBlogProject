@@ -26,7 +26,6 @@ function App() {
           <Route path="/signup" element={<Authentication type="signup"/>}/>
         </Routes>
       </body>
-
     </div>
   );
 }
