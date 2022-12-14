@@ -9,7 +9,7 @@ def hello_world():
     print(data['hello'])
     return {'msg': 'From one to America, how free are you tonight? Henry ;)'}, 200
 
-@app.route('/signup')
+@app.route('/signup', methods=['POST'])
 def signup(User):
     '''
         Creates account for user and store in database if all information is correct/unique
@@ -32,7 +32,7 @@ def signup(User):
     '''
     pass
 
-@app.route('/login')
+@app.route('/login', methods=['POST'])
 def login(username, password):
     '''
         The login route for all current users on the system
@@ -53,7 +53,7 @@ def login(username, password):
     
     '''
 
-@app.route('/createpost')
+@app.route('/createpost', methods=['POST'])
 def create_post(Post):
     '''
         This route creates new post for the user
@@ -73,7 +73,7 @@ def create_post(Post):
     '''
     pass
 
-@app.route('/post/<post_id>')
+@app.route('/post/<post_id>', methods=['GET'])
 def get_post(post_id):
     '''
         Retrieve the requested post based on post id
@@ -93,13 +93,6 @@ def get_post(post_id):
                     'owner'   (str): The username of the owner of this post
                 }
             (404): Post with post_id cannot be found
-    '''
-    pass
-
-@app.route('/user/<username>')
-def show_user_profile(username):
-    '''
-        Show the home page of the currently logged in user
     '''
     pass
 
