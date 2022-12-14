@@ -1,6 +1,14 @@
 from flask import Flask, request
+from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate
 
+db = SQLAlchemy()
 app = Flask(__name__)
+# configure the SQLite database, relative to the app instance folder
+app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://postgres:postgres@blog_project_db:5432/database"
+# initialize the app with the extension
+db.init_app(app)
+migrate = Migrate(app, db)
 
 @app.route('/', methods=['POST'])
 def hello_world():
@@ -96,14 +104,20 @@ def get_post(post_id):
     '''
     pass
 
-class User:
-    def __init__(self, username):
+class User(db.Model):
+
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String, unique=True, nullable=False)
+    email = db.Column(db.String)
+    password = db.Column(db.String)
+
+    # def __init__(self, username):
         # look into database to find username?
         # self.first_name = 
         # self.last_name = 
         # self.username = username
         # self.password = 
-        pass
+        # pass
 
 class Post:
     def __init__(self, post):
@@ -125,5 +139,7 @@ class Blog:
         pass
     def delete_blog(self, post_id):
         pass
+
+
 if __name__ == '__main__':
     app.run(debug=True, host="0.0.0.0",port=5001)

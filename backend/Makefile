@@ -47,3 +47,6 @@ prune:
 # All below commands require active docker container running the backend
 python:
 		@docker exec -it blog_project bash
+
+database:
+		@docker exec -it blog_project_db bash

@@ -11,6 +11,8 @@ services:
       POSTGRES_PASSWORD: postgres
   
   blog_project:
+    environment:
+      FLASK_APP: main.py
     container_name: blog_project
     restart: always
     build:
