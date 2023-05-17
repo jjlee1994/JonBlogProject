@@ -8,9 +8,10 @@ function PostCard(){
     return (
         <Card sx={{
             display: "flex",    
-            height: 250
+            height: 250,
+            boxShadow: "1px 1px 2px 0 rgb(60 64 67 / 40%), 1px 1px 3px 1px rgb(60 64 67 / 15%)"
         }}>
-            <Box sx={{display: 'flex', flexDirection: "c olumn", alignItems: 'center', justifyContent: 'center', pl:2, pb:2}}>
+            <Box sx={{display: 'flex', flexDirection: "column", alignItems: 'center', justifyContent: 'center', pl:2, pb:2}}>
                 <IconButton>
                     <Avatar
                         sx={{width: 80, height: 80}}

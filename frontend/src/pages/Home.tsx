@@ -1,4 +1,4 @@
-import { Typography } from "@mui/material"
+import { Grid, Typography } from "@mui/material"
 import PostCard from "../components/PostCard"
 
 function Home(){
@@ -16,11 +16,21 @@ function Home(){
             <div style={{
                 margin: "100px 0"
             }}>
-                <PostCard/>
-                <PostCard/>
-                <PostCard/>
-                <PostCard/>
-                <PostCard/>
+                <Grid container spacing={2}>
+                    <Grid item>
+                        <PostCard/>
+                    </Grid>
+                    <Grid item>
+                        <PostCard/>
+                    </Grid>
+                    <Grid item>
+                        <PostCard/>
+                    </Grid>
+                    <Grid item>
+                        <PostCard/>
+                    </Grid>
+                </Grid>
+
             </div>
             
         </div>
