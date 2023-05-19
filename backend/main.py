@@ -104,14 +104,16 @@ def get_post(post_id):
     '''
     pass
 
-class User(db.Model):
+class Profile(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String, unique=True, nullable=False)
     email = db.Column(db.String)
     password = db.Column(db.String)
+    posts = db.relationship('Post', backref='user')
 
-    # def __init__(self, username):
+
+    # def init(self, username):
         # look into database to find username?
         # self.first_name = 
         # self.last_name = 
@@ -119,14 +121,13 @@ class User(db.Model):
         # self.password = 
         # pass
 
-class Post:
-    def __init__(self, post):
-        self.subject = post['subject']
-        self.content = post['content']
-        self.time = post['time']
-        self.post_id = post['post_id']
-        self.owner = post['owner']
+class Post(db.Model):
 
+    subject = db.Column(db.String(100),nullable=False)
+    content = db.Column(db.String, nullable=False)
+    time = db.Column(db.DateTime, nullable=False)
+    id = db.Column(db.Integer, nullable=False, primary_key=True)
+    profile_id = db.Column(db.Integer, db.ForeignKey('profile.id'))
 class Blog:
     def __init__(self):
         self.users = {}
