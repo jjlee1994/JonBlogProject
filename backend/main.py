@@ -12,21 +12,21 @@ migrate = Migrate(app, db)
 
 @app.route('/', methods=['POST'])
 def hello_world():
-    print(request.get_json())
-    data = request.get_json()
-    print(data['hello'])
+    # print(request.get_json())
+    # data = request.get_json()
+    # print(data['hello'])
+    print(Profile.query.all()[0].id)
     return {'msg': 'From one to America, how free are you tonight? Henry ;)'}, 200
 
 @app.route('/signup', methods=['POST'])
-def signup(User):
+def signup():
     '''
         Creates account for user and store in database if all information is correct/unique
 
         Requests:
             payload (JSON): {
-                User: {
-                    'first_name' (str): The first name of the user
-                    'last_name' (str): The last name of the user
+                Profile: {
+                    'email' (str): The email of the user
                     'username' (str): The username of the user
                     'password' (str): The password of the user
                 }
@@ -38,10 +38,17 @@ def signup(User):
                 (400): This username already exists
 
     '''
+    inputs = request.get_json()
+    # TODO: Validate 
+    newProfile = Profile(email = inputs['email'], username = inputs['username'], password = inputs['password'])
+    db.session.add(newProfile)
+    db.session.commit()
+    return {'msg': 'new profile created'}, 201
+
     pass
 
 @app.route('/login', methods=['POST'])
-def login(username, password):
+def login():
     '''
         The login route for all current users on the system
 
@@ -60,9 +67,19 @@ def login(username, password):
             (404): User not found
     
     '''
+    inputs = request.get_json()
+    user = Profile.query.filter_by(username = inputs['username']).first()
+    if not user:
+        return {'msg':'User not found'}, 404
+    if user.password == inputs['password'] :
+        return user.to_dict(), 200
+    else :
+        return {'msg': "User's name or password did not match" }, 400
+    pass
+# TODO: query profile with id/username
 
 @app.route('/createpost', methods=['POST'])
-def create_post(Post):
+def create_post():
     '''
         This route creates new post for the user
 
@@ -81,8 +98,9 @@ def create_post(Post):
     '''
     pass
 
+#TODO: make get_post for user instead of id
 @app.route('/post/<post_id>', methods=['GET'])
-def get_post(post_id):
+def get_post():
     '''
         Retrieve the requested post based on post id
 
@@ -111,7 +129,9 @@ class Profile(db.Model):
     email = db.Column(db.String)
     password = db.Column(db.String)
     posts = db.relationship('Post', backref='user')
-
+    
+    def to_dict(self):
+        return {'id': self.id, 'username': self.username, 'email': self.email}
 
     # def init(self, username):
         # look into database to find username?
