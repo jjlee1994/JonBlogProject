@@ -1,6 +1,7 @@
 from flask import Flask, request
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
+import datetime
 
 db = SQLAlchemy()
 app = Flask(__name__)
@@ -45,7 +46,6 @@ def signup():
     db.session.commit()
     return {'msg': 'new profile created'}, 201
 
-    pass
 
 @app.route('/login', methods=['POST'])
 def login():
@@ -75,7 +75,6 @@ def login():
         return user.to_dict(), 200
     else :
         return {'msg': "User's name or password did not match" }, 400
-    pass
 # TODO: query profile with id/username
 
 @app.route('/createpost', methods=['POST'])
@@ -89,38 +88,62 @@ def create_post():
                     'subject' (str): The subject line of the blog post
                     'content' (str): The contents of the blog post
                     'time'    (date and time): The time of create of the blog post
-                    'post_id' (int): The unique idenifier of the blog post
-                    'owner'   (str): The username of the owner of this post
+                    'id' (int): The unique idenifier of the blog post
+                    'profile_id'(str): The username of the owner of this post
                 }
         Response:
             (201): Blog post created
             (400): Not all content is filled
     '''
-    pass
+    #TODO: change profile_id when adding authentication
+    inputs = request.get_json()
+    post = Post(subject=inputs['subject'], content=inputs['content'], time=datetime.datetime.now(), profile_id=inputs['profile_id'])
+    
+    db.session.add(post)
+    db.session.commit()
+    return post.to_dict() , 201
 
 #TODO: make get_post for user instead of id
 @app.route('/post/<post_id>', methods=['GET'])
-def get_post():
+def get_post(post_id):
     '''
         Retrieve the requested post based on post id
 
         Requests:
             payload (JSON): 
-            {
-                "post_id" (int): The id of the specific post to retrieve
-            }
         Response:
             (200): Returns the content of the requested Post
                 Post: {
                     'subject' (str): The subject line of the blog post
                     'content' (str): The contents of the blog post
                     'time'    (date and time): The time of create of the blog post
-                    'post_id' (int): The unique idenifier of the blog post
-                    'owner'   (str): The username of the owner of this post
+                    'id' (int): The unique idenifier of the blog post
+                    'profile_id'   (str): The username of the owner of this post
                 }
             (404): Post with post_id cannot be found
     '''
-    pass
+    post = Post.query.filter_by(id = post_id).first()
+    if not post:
+        return {'msg': 'post not found'}
+    return post.to_dict(), 200
+
+@app.route('/<user_id>', methods=['GET'])
+def get_user_posts(user_id):
+    '''
+        Retrieve the requested post based on profile_id
+
+        Requests:
+            payload (JSON): 
+        Response:
+            (200): Returns the content of the requested Post
+                [<Post>]: list of Posts
+            (404): Post with post_id cannot be found
+    '''
+    posts = Post.query.filter_by(profile_id = user_id)
+    post_list = []
+    for post in posts:
+        post_list.append(post.to_dict())
+    return {'data': post_list} , 200
 
 class Profile(db.Model):
 
@@ -148,6 +171,14 @@ class Post(db.Model):
     time = db.Column(db.DateTime, nullable=False)
     id = db.Column(db.Integer, nullable=False, primary_key=True)
     profile_id = db.Column(db.Integer, db.ForeignKey('profile.id'))
+
+    def to_dict(self):
+        return {'subject' : self.subject,
+                'content' : self.content,
+                'time' : self.time,
+                'post_id' : self.id,
+                'profile_id' : self.profile_id}
+    
 class Blog:
     def __init__(self):
         self.users = {}
