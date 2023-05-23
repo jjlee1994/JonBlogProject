@@ -1,10 +1,13 @@
 from flask import Flask, request
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
+from flask_bcrypt import Bcrypt
 import datetime
+
 
 db = SQLAlchemy()
 app = Flask(__name__)
+bcrypt = Bcrypt(app)
 # configure the SQLite database, relative to the app instance folder
 app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://postgres:postgres@blog_project_db:5432/database"
 # initialize the app with the extension
@@ -41,7 +44,7 @@ def signup():
     '''
     inputs = request.get_json()
     # TODO: Validate 
-    newProfile = Profile(email = inputs['email'], username = inputs['username'], password = inputs['password'])
+    newProfile = Profile(email = inputs['email'], username = inputs['username'], password = bcrypt.generate_password_hash(inputs['password']).decode('utf-8'))
     db.session.add(newProfile)
     db.session.commit()
     return {'msg': 'new profile created'}, 201
@@ -71,7 +74,7 @@ def login():
     user = Profile.query.filter_by(username = inputs['username']).first()
     if not user:
         return {'msg':'User not found'}, 404
-    if user.password == inputs['password'] :
+    if bcrypt.check_password_hash(user.password, inputs['password']) :
         return user.to_dict(), 200
     else :
         return {'msg': "User's name or password did not match" }, 400
