@@ -1,9 +1,14 @@
 import { Avatar, Card, CardContent, IconButton, Typography } from "@mui/material";
 import { Box } from "@mui/system";
 
+export interface Props {
+    username: string;
+    subject: string;
+    content: string;
 
+}
 
-function PostCard(){
+function PostCard(props : Props){
 
     return (
         <Card sx={{
@@ -16,13 +21,16 @@ function PostCard(){
                     <Avatar
                         sx={{width: 80, height: 80}}
                     > 
-                        H 
+                        {props.username[0].toUpperCase()}
                     </Avatar>
                 </IconButton>
-                <Typography> NAME </Typography>
+                <Typography> {props.username} </Typography>
             </Box>
-            <Box sx={{display: 'flex', flexDirection: "row", alignItems: 'center', pl:2, pr:2, pb:2}}>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+            <Box sx={{flexDirection: "column", alignItems: 'center', justifyContent: 'center' , pl:2, pr:2, pb:2}}>
+                <Typography variant='h4'>{props.subject}</Typography>
+                <Box sx={{display: 'flex', flexDirection: "row", alignItems: 'center'}}>
+                    {props.content}
+                </Box>
             </Box>
         </Card>
 

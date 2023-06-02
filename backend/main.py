@@ -1,25 +1,33 @@
-from flask import Flask, request
+from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_bcrypt import Bcrypt
+from flask_cors import CORS
+from flask_jwt_extended import create_access_token
+from flask_jwt_extended import get_jwt_identity
+from flask_jwt_extended import jwt_required
+from flask_jwt_extended import JWTManager
+from flask_jwt_extended import set_access_cookies
+from flask_jwt_extended import unset_jwt_cookies
 import datetime
-
 
 db = SQLAlchemy()
 app = Flask(__name__)
+app.config['JWT_SECRET_KEY'] = "Kq06kyGTM5UrqLRsLokql1jCSXNvooOw"
+CORS(app)
 bcrypt = Bcrypt(app)
+jwt = JWTManager(app)
 # configure the SQLite database, relative to the app instance folder
 app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://postgres:postgres@blog_project_db:5432/database"
 # initialize the app with the extension
 db.init_app(app)
 migrate = Migrate(app, db)
 
-@app.route('/', methods=['POST'])
+@app.route('/', methods=['GET'])
+@jwt_required()
 def hello_world():
-    # print(request.get_json())
-    # data = request.get_json()
-    # print(data['hello'])
-    print(Profile.query.all()[0].id)
+    # current_user = get_jwt_identity()
+    # print(current_user)
     return {'msg': 'From one to America, how free are you tonight? Henry ;)'}, 200
 
 @app.route('/signup', methods=['POST'])
@@ -44,7 +52,7 @@ def signup():
     '''
     inputs = request.get_json()
     # TODO: Validate 
-    newProfile = Profile(email = inputs['email'], username = inputs['username'], password = bcrypt.generate_password_hash(inputs['password']).decode('utf-8'))
+    newProfile = Profile(email = inputs['email'], username = inputs['username'], password = inputs['password'])
     db.session.add(newProfile)
     db.session.commit()
     return {'msg': 'new profile created'}, 201
@@ -71,16 +79,20 @@ def login():
     
     '''
     inputs = request.get_json()
+    response = jsonify({"msg" : "login successful"})
     user = Profile.query.filter_by(username = inputs['username']).first()
     if not user:
         return {'msg':'User not found'}, 404
+    # check encrypted password
     if bcrypt.check_password_hash(user.password, inputs['password']) :
-        return user.to_dict(), 200
+        #TODO: make expires_delta not forever
+        access_token = create_access_token(identity=user.id,expires_delta=False)
+        return {"access_token": access_token}, 200
     else :
         return {'msg': "User's name or password did not match" }, 400
-# TODO: query profile with id/username
 
 @app.route('/createpost', methods=['POST'])
+@jwt_required()
 def create_post():
     '''
         This route creates new post for the user
@@ -90,9 +102,6 @@ def create_post():
                 Post: {
                     'subject' (str): The subject line of the blog post
                     'content' (str): The contents of the blog post
-                    'time'    (date and time): The time of create of the blog post
-                    'id' (int): The unique idenifier of the blog post
-                    'profile_id'(str): The username of the owner of this post
                 }
         Response:
             (201): Blog post created
@@ -100,20 +109,47 @@ def create_post():
     '''
     #TODO: change profile_id when adding authentication
     inputs = request.get_json()
-    post = Post(subject=inputs['subject'], content=inputs['content'], time=datetime.datetime.now(), profile_id=inputs['profile_id'])
+    post = Post(subject=inputs['subject'], content=inputs['content'], time=datetime.datetime.now(), profile_id = get_jwt_identity())
     
     db.session.add(post)
     db.session.commit()
     return post.to_dict() , 201
 
+@app.route('/<post_id>/editpost', methods=['POST'])
+@jwt_required()
+def edit_post(post_id):
+    '''
+        This route edit post for the user
+
+        Requests:
+            payload (JSON):
+                Post: {
+                    'subject' (str): The subject line of the blog post
+                    'content' (str): The contents of the blog post
+                }
+        Response:
+            (201): Blog post created
+            (400): Not all content is filled
+    '''
+    post = Post.query.filter_by(post_id=post_id).first()
+    if post.profile_id != get_jwt_identity():
+        return {"msg": "User does not have access to edit this post"}, 400
+    inputs = request.get_json()
+    if inputs['subject']:
+        post.subject = inputs['subject']
+    if inputs['content']:
+        post.content = inputs['content']
+    pass
+
 #TODO: make get_post for user instead of id
 @app.route('/post/<post_id>', methods=['GET'])
+@jwt_required()
 def get_post(post_id):
     '''
         Retrieve the requested post based on post id
 
         Requests:
-            payload (JSON): 
+            payload (JSON):
         Response:
             (200): Returns the content of the requested Post
                 Post: {
@@ -121,7 +157,8 @@ def get_post(post_id):
                     'content' (str): The contents of the blog post
                     'time'    (date and time): The time of create of the blog post
                     'id' (int): The unique idenifier of the blog post
-                    'profile_id'   (str): The username of the owner of this post
+                    'profile_id' (str): The id of the owner of this post
+                    'username' (str): The username of the owner of this post
                 }
             (404): Post with post_id cannot be found
     '''
@@ -130,19 +167,22 @@ def get_post(post_id):
         return {'msg': 'post not found'}
     return post.to_dict(), 200
 
-@app.route('/<user_id>', methods=['GET'])
-def get_user_posts(user_id):
+@app.route('/posts', methods=['GET'])
+@jwt_required()
+def get_user_posts():
     '''
         Retrieve the requested post based on profile_id
 
         Requests:
-            payload (JSON): 
+            payload (JSON): {
+                numberOfPost: (int): The number of posts to return
+            }
         Response:
             (200): Returns the content of the requested Post
                 [<Post>]: list of Posts
             (404): Post with post_id cannot be found
     '''
-    posts = Post.query.filter_by(profile_id = user_id)
+    posts = Post.query.filter_by(profile_id = get_jwt_identity())
     post_list = []
     for post in posts:
         post_list.append(post.to_dict())
@@ -159,13 +199,13 @@ class Profile(db.Model):
     def to_dict(self):
         return {'id': self.id, 'username': self.username, 'email': self.email}
 
-    # def init(self, username):
-        # look into database to find username?
-        # self.first_name = 
-        # self.last_name = 
-        # self.username = username
-        # self.password = 
-        # pass
+    def __str__(self):
+        return "User(id='%s') " % self.id
+
+    def init(self, username, password, email):
+        self.username = username
+        self.password = bcrypt.generate_password_hash(password).decode('utf-8')
+        self.email = email
 
 class Post(db.Model):
 
@@ -180,7 +220,8 @@ class Post(db.Model):
                 'content' : self.content,
                 'time' : self.time,
                 'post_id' : self.id,
-                'profile_id' : self.profile_id}
+                'profile_id' : self.profile_id,
+                'username' : Profile.query.filter_by( id = self.profile_id).first().username}
     
 class Blog:
     def __init__(self):

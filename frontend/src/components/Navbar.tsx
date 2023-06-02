@@ -3,9 +3,12 @@ import { AppBar, Button, Toolbar, Typography, IconButton, MenuItem, Menu } from 
 import MenuIcon from '@mui/icons-material/Menu';
 import { Box } from "@mui/system"
 import React, { useState } from "react";
+import { Link } from "react-router-dom"
+import finalPropsSelectorFactory from "react-redux/es/connect/selectorFactory";
 
 export interface authProps {
-    pageName : string
+    pageName : string;
+    loggedIn : boolean;
 }
 
 function AuthenticatedNavBar(props : authProps){
@@ -50,9 +53,9 @@ function AuthenticatedNavBar(props : authProps){
                 open={Boolean(anchorEl)}
                 onClose={handleClose}
             >
-                <MenuItem> Home </MenuItem>
-                <MenuItem> Profile </MenuItem>
-                <MenuItem> Log Out </MenuItem>
+                <MenuItem component={Link} to="/"> Home </MenuItem>
+                <MenuItem component={Link} to="/profile"> Profile </MenuItem>
+                <MenuItem component={Link} to="/login"> Log Out </MenuItem>
             </Menu>
 
         </Toolbar>
@@ -74,13 +77,16 @@ function NonAuthenticatedNavBar(){
 }
 
 
-function Navbar(){
+function Navbar(props: authProps){
 
     return (
         <Box sx={{flexGrow: 1}}>
             <AppBar position ="static">
-                <AuthenticatedNavBar pageName={"PAGE NAME"}/>
-                {/* <NonAuthenticatedNavBar/> */}
+                {props.loggedIn ? 
+                    <AuthenticatedNavBar pageName={"PAGE NAME"} loggedIn={props.loggedIn}/> 
+                    : 
+                    <NonAuthenticatedNavBar/>
+                }
             </AppBar>
         </Box>
     )
