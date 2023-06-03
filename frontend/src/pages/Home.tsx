@@ -2,9 +2,13 @@ import { Button, Grid, Typography } from "@mui/material"
 import PostCard from "../components/PostCard"
 import axios from 'axios'
 import { useEffect, useState } from 'react'
+import PostEntry from "../components/PostEntry"
 
+export interface Props {
+    onInputChange: any;
+}
 
-function Home(){
+function Home(props: Props){
     const [state, setState] = useState({
         posts: []
     })
@@ -25,17 +29,19 @@ function Home(){
     return (
         <div
             style={{
-                margin: "0 200px"
+                
             }}
         >
-            <Typography>
-                Home Page
-            </Typography>
-            
-            <div style={{
-                margin: "100px 0"
-            }}>
-                <Grid container spacing={2}>
+            <Grid container spacing={2} justifyContent="space-evenly">
+                <Grid item xs={12}>
+                    <Typography>
+                        Home Page
+                    </Typography>
+                </Grid>
+                <Grid item xs={12}>
+                    <PostEntry onInputChange={props.onInputChange}/>  
+                </Grid>
+                <Grid item container spacing={2} justifyContent="space-evenly">
                     {state.posts.map((i)=>{
                         return (                    
                             <Grid item>
@@ -43,9 +49,7 @@ function Home(){
                             </Grid>)
                     })}
                 </Grid>
-
-            </div>
-            
+            </Grid>           
         </div>
     )
 

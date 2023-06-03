@@ -10,7 +10,6 @@ export interface Props {
     onInputChange: any;
 }
 
-
 function LoginModal(props : Props){
 
     async function helloWorld() {
@@ -26,15 +25,6 @@ function LoginModal(props : Props){
         })
         localStorage.setItem('access_token', response.data.access_token)
         console.log(localStorage.getItem('access_token'))
-    }
-
-    async function homepage() {
-        const response = await axios({
-            method: 'get',
-            url: 'http://localhost:5001/' + props.username,
-            headers: {'Authorization' : 'Bearer ' + localStorage.getItem('access_token')}
-        })
-        console.log(response)
     }
 
     async function createPost() {

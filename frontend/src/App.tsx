@@ -37,7 +37,7 @@ function App() {
       </header>
       <body>
         <Routes>
-          <Route path="/" element={<Home/>}/>
+          <Route path="/" element={<Home onInputChange={onInputChange}/>}/>
           <Route path="/login" element={<Authentication type="login" username={state.username} password={state.password} onInputChange={onInputChange}/>}/>
           <Route path="/profile" element={<Profile username={state.username}/>}/>
           <Route path="/signup" element={<Authentication type="signup" username={state.username} password={state.password} onInputChange={onInputChange}/>}/>

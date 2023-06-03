@@ -1,4 +1,4 @@
-import { Avatar, Card, CardContent, IconButton, Typography } from "@mui/material";
+import { Avatar, Card, CardContent, IconButton, Typography, Grid } from "@mui/material";
 import { Box } from "@mui/system";
 
 export interface Props {
@@ -11,29 +11,34 @@ export interface Props {
 function PostCard(props : Props){
 
     return (
-        <Card sx={{
-            display: "flex",    
-            height: 250,
-            boxShadow: "1px 1px 2px 0 rgb(60 64 67 / 40%), 1px 1px 3px 1px rgb(60 64 67 / 15%)"
-        }}>
-            <Box sx={{display: 'flex', flexDirection: "column", alignItems: 'center', justifyContent: 'center', pl:2, pb:2}}>
-                <IconButton>
-                    <Avatar
-                        sx={{width: 80, height: 80}}
-                    > 
-                        {props.username[0].toUpperCase()}
-                    </Avatar>
-                </IconButton>
-                <Typography> {props.username} </Typography>
-            </Box>
-            <Box sx={{flexDirection: "column", alignItems: 'center', justifyContent: 'center' , pl:2, pr:2, pb:2}}>
-                <Typography variant='h4'>{props.subject}</Typography>
-                <Box sx={{display: 'flex', flexDirection: "row", alignItems: 'center'}}>
-                    {props.content}
-                </Box>
-            </Box>
-        </Card>
-
+        <div>
+            <Grid
+                container
+                justifyContent="space-evenly"
+                alignItems="center"
+            >
+                <Card sx={{
+                    minWidth: 600
+                }}>
+                    <Grid container spacing={2}>
+                        <Grid item container justifyContent="center" alignItems="center" xs={3}>
+                            <IconButton >
+                                <Avatar
+                                    sx={{width: 80, height: 80}}
+                                >
+                                    {props.username[0].toUpperCase()}
+                                </Avatar>
+                            </IconButton>
+                            <Typography align="center"> {props.username} </Typography>
+                        </Grid>
+                        <Grid item xs={9}>
+                            <Typography variant='h4'>{props.subject}</Typography>
+                            <Typography variant='body2'>{props.content}</Typography>
+                        </Grid>
+                    </Grid>
+                </Card>
+            </Grid>
+        </div>
     )
 
 }
