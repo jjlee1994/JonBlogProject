@@ -9,6 +9,7 @@ import finalPropsSelectorFactory from "react-redux/es/connect/selectorFactory";
 export interface authProps {
     pageName : string;
     loggedIn : boolean;
+    username : string;
 }
 
 function AuthenticatedNavBar(props : authProps){
@@ -23,10 +24,15 @@ function AuthenticatedNavBar(props : authProps){
         setAnchorEl(null)
     }
 
+    function logout() {
+        localStorage.removeItem('access_token')
+        props.loggedIn = false
+    }
+
     return (
         <Toolbar>
             <Typography variant="h6" component="div" sx={{flexGrow: 1}}>
-                {props.pageName}
+                {props.username}
             </Typography>
             <IconButton
                 size="large"
@@ -54,8 +60,8 @@ function AuthenticatedNavBar(props : authProps){
                 onClose={handleClose}
             >
                 <MenuItem component={Link} to="/"> Home </MenuItem>
-                <MenuItem component={Link} to="/profile"> Profile </MenuItem>
-                <MenuItem component={Link} to="/login"> Log Out </MenuItem>
+                <MenuItem component={Link} to={'/' + props.username}> Profile </MenuItem>
+                <MenuItem component={Link} to="/login" onClick={logout}> Log Out </MenuItem>
             </Menu>
 
         </Toolbar>
@@ -83,7 +89,7 @@ function Navbar(props: authProps){
         <Box sx={{flexGrow: 1}}>
             <AppBar position ="static">
                 {props.loggedIn ? 
-                    <AuthenticatedNavBar pageName={"PAGE NAME"} loggedIn={props.loggedIn}/> 
+                    <AuthenticatedNavBar pageName={"PAGE NAME"} loggedIn={props.loggedIn} username={props.username}/> 
                     : 
                     <NonAuthenticatedNavBar/>
                 }

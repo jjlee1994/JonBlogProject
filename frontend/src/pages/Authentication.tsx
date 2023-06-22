@@ -5,10 +5,8 @@ import {Button} from "@mui/material"
 import { useState } from "react"
 
 export interface Props {
-    type: string;
-    username: string;
-    password: string;
-    onInputChange: any;
+    type: string
+    setLoggedIn: any
 }
 
 function Authentication(props : Props){
@@ -17,7 +15,7 @@ function Authentication(props : Props){
     if (props.type === "login")
         return (
             <div style={{textAlign: "center"}}>
-                <LoginModal username={props.username} password={props.password} onInputChange={props.onInputChange}/>
+                <LoginModal setLoggedIn={props.setLoggedIn}/>
             </div>
         )
     else

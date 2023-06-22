@@ -5,12 +5,14 @@ import { Link } from "react-router-dom"
 import axios from 'axios'
 
 export interface Props {
-    username: string;
-    password: string;
-    onInputChange: any;
+    setLoggedIn: any
 }
 
-function LoginModal(props : Props){
+function LoginModal(props: Props){
+    const [state, setState] = useState({
+        username: '',
+        password: ''
+    })
 
     async function helloWorld() {
         const response = await axios.get('http://localhost:5001/')
@@ -20,25 +22,21 @@ function LoginModal(props : Props){
 
     async function login() {
         const response = await axios.post('http://localhost:5001/login',{
-            username: props.username,
-            password: props.password
+            username: state.username,
+            password: state.password
         })
-        localStorage.setItem('access_token', response.data.access_token)
-        console.log(localStorage.getItem('access_token'))
+        console.log('login')
+        if(response) {
+            console.log(response)
+            localStorage.setItem('access_token', response.data.access_token)
+            props.setLoggedIn(true)
+        }
     }
 
-    async function createPost() {
-        const response = await axios({
-            method: 'post',
-            url: 'http://localhost:5001/createpost',
-            headers: {'Authorization' : 'Bearer ' + localStorage.getItem('access_token')},
-            data: {
-                subject: 'Bye',
-                content: 'UnderWorld, BYESUPPP'
-            }
-        })
+    function handleChange(event:any) {
+        setState({...state, [event.target.id]: event.target.value})
     }
-
+    //TODO: make login print message & not redirect if failed
     return (
         <div>
             <Grid
@@ -52,10 +50,9 @@ function LoginModal(props : Props){
                         <Typography>
                             Login Modal
                         </Typography>
-                        <TextField id="username" label="Username" fullWidth margin="normal" value={props.username} onChange={props.onInputChange}/>
-                        <TextField id="password" label="Password" fullWidth margin="normal" onChange={props.onInputChange}/>
-                        {/* <Button variant="contained" size="large" href="/" onClick={loginClick}> Login </Button> */}
-                        <Button variant="contained" size="large" onClick={login} href="/"> Login </Button>
+                        <TextField id="username" label="Username" fullWidth margin="normal" onChange={handleChange}/>
+                        <TextField id="password" label="Password" fullWidth margin="normal" onChange={handleChange}/>
+                        <Button variant="contained" size="large" onClick={login}> Login </Button>
                         <Typography>
                             Not yet a user? <a href="/signup">sign up</a>
                         </Typography>

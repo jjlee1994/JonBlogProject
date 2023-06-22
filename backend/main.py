@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import desc
 from flask_migrate import Migrate
 from flask_bcrypt import Bcrypt
 from flask_cors import CORS
@@ -26,8 +27,8 @@ migrate = Migrate(app, db)
 @app.route('/', methods=['GET'])
 @jwt_required()
 def hello_world():
-    # current_user = get_jwt_identity()
-    # print(current_user)
+    current_user = get_jwt_identity()
+    print(current_user)
     return {'msg': 'From one to America, how free are you tonight? Henry ;)'}, 200
 
 @app.route('/signup', methods=['POST'])
@@ -79,7 +80,6 @@ def login():
     
     '''
     inputs = request.get_json()
-    response = jsonify({"msg" : "login successful"})
     user = Profile.query.filter_by(username = inputs['username']).first()
     if not user:
         return {'msg':'User not found'}, 404
@@ -87,9 +87,38 @@ def login():
     if bcrypt.check_password_hash(user.password, inputs['password']) :
         #TODO: make expires_delta not forever
         access_token = create_access_token(identity=user.id,expires_delta=False)
-        return {"access_token": access_token}, 200
+        return { "access_token": access_token}, 200
     else :
         return {'msg': "User's name or password did not match" }, 400
+
+
+@app.route('/<username>', methods=['GET'])
+def get_user(username):
+    '''
+        This route returns user information
+        Response:
+            (200): Successfully return profile data of <username>
+                returns {
+                    User {
+                        'id' (int): The id of the profile, 
+                        'username' (string): The username of the profile
+                        'email' (string): The email of the profile
+                    }
+                }
+
+    '''
+    profile = Profile.query.filter_by(username = username).first()
+    if not profile:
+        return {'msg' : 'User not found.'}, 400
+    return profile.to_dict(), 200
+
+@app.route('/current_user', methods=['GET'])
+@jwt_required()
+def get_current_user():
+    profile = Profile.query.filter_by(id = get_jwt_identity()).first()
+    if not profile:
+        return {'msg' : 'User not found.'}, 400
+    return profile.to_dict(), 200
 
 @app.route('/createpost', methods=['POST'])
 @jwt_required()
@@ -167,9 +196,8 @@ def get_post(post_id):
         return {'msg': 'post not found'}
     return post.to_dict(), 200
 
-@app.route('/posts', methods=['GET'])
-@jwt_required()
-def get_user_posts():
+@app.route('/<username>/posts', methods=['GET'])
+def get_user_posts(username):
     '''
         Retrieve the requested post based on profile_id
 
@@ -182,11 +210,43 @@ def get_user_posts():
                 [<Post>]: list of Posts
             (404): Post with post_id cannot be found
     '''
-    posts = Post.query.filter_by(profile_id = get_jwt_identity())
+    user = Profile.query.filter_by(username = username).first()
+    posts = Post.query.filter_by(profile_id = user.id).order_by(desc('id')).limit(5)
     post_list = []
     for post in posts:
         post_list.append(post.to_dict())
     return {'data': post_list} , 200
+
+# @app.route('/followedposts', method=['GET'])
+
+@app.route('/follow/<username>', methods=['POST'])
+@jwt_required()
+def follow(username):
+    '''
+        Add this profile to the list of followers
+
+        Requests:
+            payload (JSON):{
+                
+            }
+        Response:
+            (200) : Successfully followed Profile
+    '''
+    profile = Profile.query.filter_by(username = username).first()
+    current_user = Profile.query.filter_by(id = get_jwt_identity()).first()
+    if profile is None:
+        return { 'msg' : 'Profile not found'}, 400
+    if profile == current_user:
+        return { 'msg' : 'You cannot follow yourself'}
+    current_user.follow(profile)
+    db.session.commit()
+    return { 'msg' : 'you are following ' + username}
+    pass
+
+followers = db.Table('followers',
+    db.Column('follower_id', db.Integer, db.ForeignKey('profile.id')),
+    db.Column('followed_id', db.Integer, db.ForeignKey('profile.id'))
+)
 
 class Profile(db.Model):
 
@@ -194,8 +254,13 @@ class Profile(db.Model):
     username = db.Column(db.String, unique=True, nullable=False)
     email = db.Column(db.String)
     password = db.Column(db.String)
-    posts = db.relationship('Post', backref='user')
-    
+    posts = db.relationship('Post', backref='Profile')
+    followed = db.relationship('Profile', 
+                               secondary = followers, 
+                               primaryjoin=(followers.c.follower_id == id),
+                               secondaryjoin=(followers.c.followed_id == id),
+                               backref= db.backref('followers', lazy='dynamic'),
+                               lazy='dynamic')
     def to_dict(self):
         return {'id': self.id, 'username': self.username, 'email': self.email}
 
@@ -206,6 +271,17 @@ class Profile(db.Model):
         self.username = username
         self.password = bcrypt.generate_password_hash(password).decode('utf-8')
         self.email = email
+
+    def is_following(self, profile):
+        return self.followed.filter_by(followers.c.followed_id == profile.id).count() > 0
+
+    def follow(self, profile):
+        if not self.is_following(profile):
+            self.followed.append(profile)
+    
+    def unfollow(self, profile):
+        if self.is_following(profile):
+            self.followed.remove(profile)
 
 class Post(db.Model):
 
@@ -221,7 +297,7 @@ class Post(db.Model):
                 'time' : self.time,
                 'post_id' : self.id,
                 'profile_id' : self.profile_id,
-                'username' : Profile.query.filter_by( id = self.profile_id).first().username}
+                'username' : Profile.query.filter_by( id = self.profile_id).first().username}    
     
 class Blog:
     def __init__(self):

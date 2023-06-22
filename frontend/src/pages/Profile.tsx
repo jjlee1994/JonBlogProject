@@ -1,70 +1,55 @@
 import { ThemeContext } from "@emotion/react"
 import { Button, ButtonBase, Typography, Grid, Avatar, Box, TextField } from "@mui/material"
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import { useParams } from 'react-router-dom'
+import PostCard from "../components/PostCard"
+import ProfileCard from "../components/ProfileCard"
+import axios from 'axios'
 
-export interface Props {
-    username: any;
-}
 
 
-function Profile(props : Props){
 
+function Profile(){
     const [state, setState] = useState({
-        changeUsernameButton: false,
-        changeEmailButton: false,
-        changePasswordButton: false
-    });
+        username: "",
+        posts: []
+    })
 
-    function changeUsernameClick() {
-        setState({...state, changeUsernameButton: !state.changeUsernameButton});
-    }
+    let { username } = useParams();
 
-    function changeEmailClick() {
-        setState({...state, changeEmailButton: !state.changeEmailButton});
+    async function getProfile() {
+        const user = await axios({
+            method: 'get',
+            url: 'http://localhost:5001/' + username
+        })
+        const posts = await axios({
+            method: 'get',
+            url: 'http://localhost:5001/' + username + '/posts'
+        })
+        setState({username: user.data.username, posts: posts.data.data})
     }
-
-    function changePasswordClick() {
-        setState({...state, changePasswordButton: !state.changePasswordButton});
-    }
+    useEffect(()=>{
+        getProfile()
+    },[])
 
     return (
-        <Box sx={{flexGrow: 1, margin: "0 200px"}}>
-            <Grid container spacing={4}>
-                <Grid item xs={6}>
-                    <ButtonBase sx={{width:160, height: 160}}>
-                        <Avatar sx={{width:160, height: 160}}>H</Avatar>
-                        </ButtonBase>
-                </Grid>
-                <Grid item container xs={6}>
-                        <Grid item xs={6}>
-                            {!state.changeUsernameButton &&<Typography>UserName: {props.username}</Typography>}
-                            {state.changeUsernameButton && <TextField></TextField>}
-                        </Grid>
-                        <Grid item xs={6}>
-                            {!state.changeUsernameButton && <Button variant="contained" onClick={changeUsernameClick}>Change Username</Button>}
-                            {state.changeUsernameButton && <Button variant="contained" onClick={changeUsernameClick}>Save</Button>}
-                            {state.changeUsernameButton && <Button variant="contained" onClick={changeUsernameClick}>Cancel</Button>}
-                        </Grid>
-                        <Grid item xs={6}>
-                            {!state.changeEmailButton && <Typography>Email: Email</Typography>}
-                            {state.changeEmailButton && <TextField></TextField>}
-                        </Grid>
-                        <Grid item xs={6}>
-                            {!state.changeEmailButton && <Button variant="contained" onClick={changeEmailClick}>Change Email</Button>}
-                            {state.changeEmailButton && <Button variant="contained" onClick={changeEmailClick}>Save</Button>}
-                            {state.changeEmailButton && <Button variant="contained" onClick={changeEmailClick}>Cancel</Button>}
-                        </Grid>
-                        <Grid item xs={6}>
-                            {state.changePasswordButton && <TextField></TextField>}
-                        </Grid>
-                        <Grid item xs={6} onClick={changePasswordClick}>
-                            {!state.changePasswordButton && <Button variant="contained">Change Password</Button>}
-                            {state.changePasswordButton && <Button variant="contained" onClick={changePasswordClick}>Save</Button>}
-                            {state.changePasswordButton && <Button variant="contained" onClick={changePasswordClick}>Cancel</Button>}
-                        </Grid>
-                </Grid>
+        <div>
+            <Grid 
+                container
+                justifyContent="space-evenly"
+                alignItems="center"
+            >
+                {state.username && <ProfileCard username={state.username}/>}
             </Grid>
-        </Box>
+            <Grid item container spacing={2} justifyContent="space-evenly">
+                {state.posts.map((i)=>{
+                    return (                    
+                        <Grid item xs={12}>
+                            <PostCard username={i['username']} subject={i['subject']} content={i['content']}/>
+                        </Grid>)
+                })}
+            </Grid>
+        </div>
     )
 }
 
