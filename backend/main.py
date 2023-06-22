@@ -84,6 +84,7 @@ def login():
     if not user:
         return {'msg':'User not found'}, 404
     # check encrypted password
+    print(user.password, inputs['password'])
     if bcrypt.check_password_hash(user.password, inputs['password']) :
         #TODO: make expires_delta not forever
         access_token = create_access_token(identity=user.id,expires_delta=False)
@@ -217,7 +218,31 @@ def get_user_posts(username):
         post_list.append(post.to_dict())
     return {'data': post_list} , 200
 
-# @app.route('/followedposts', method=['GET'])
+@app.route('/allposts', methods=['GET'])
+@jwt_required()
+def get_all_posts():
+    '''
+        Retrieve the requested all self and followed posts
+
+        Requests:
+            payload (JSON): {
+                numberOfPost: (int): The number of posts to return
+            }
+        Response:
+            (200): Returns the content of the requested Post
+                [<Post>]: list of Posts
+            (404): Post with post_id cannot be found
+    '''
+    user = Profile.query.filter_by(id = get_jwt_identity()).first()
+    followed = Post.query.join(
+        followers, (followers.c.followed_id == Post.profile_id)).filter(
+        followers.c.follower_id == user.id).order_by(desc('id')).limit(5)
+    own = Post.query.filter_by(profile_id = user.id).order_by(desc('id')).limit(5)
+    allposts = followed.union(own).order_by(Post.time.desc()).limit(5)
+    post_list = []
+    for post in allposts:
+        post_list.append(post.to_dict())
+    return { 'data' : post_list}, 200
 
 @app.route('/follow/<username>', methods=['POST'])
 @jwt_required()
@@ -267,13 +292,13 @@ class Profile(db.Model):
     def __str__(self):
         return "User(id='%s') " % self.id
 
-    def init(self, username, password, email):
+    def __init__(self, username, password, email):
         self.username = username
         self.password = bcrypt.generate_password_hash(password).decode('utf-8')
         self.email = email
 
     def is_following(self, profile):
-        return self.followed.filter_by(followers.c.followed_id == profile.id).count() > 0
+        return self.followed.filter(followers.c.followed_id == profile.id).count() > 0
 
     def follow(self, profile):
         if not self.is_following(profile):
