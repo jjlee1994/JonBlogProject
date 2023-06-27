@@ -14,16 +14,17 @@ function Home(props: Props){
     })
     //TODO: make this call return all post of you & people you follow
     async function homepage() {
-    //     const response = await axios({
-    //         method: 'get',
-    //         url: 'http://localhost:5001/posts',
-    //         headers: {'Authorization' : 'Bearer ' + localStorage.getItem('access_token')}
-    //     })
-    //     setState({posts: response.data.data})
+        const response = await axios({
+            method: 'get',
+            url: 'http://localhost:5001/allposts',
+            headers: {'Authorization' : 'Bearer ' + localStorage.getItem('access_token')}
+        })
+        setState({posts: response.data.data})
+        console.log(response.data.data)
     }
-    // useEffect(()=>{
-    //     homepage()
-    // }, [])
+    useEffect(()=>{
+        homepage()
+    }, [])
     return (
         <div
             style={{
@@ -43,7 +44,7 @@ function Home(props: Props){
                     {state.posts.map((i)=>{
                         return (                    
                             <Grid item xs={12}>
-                                <PostCard username={i['username']} subject={i['subject']} content={i['content']}/>
+                                <PostCard username={i['username']} subject={i['subject']} content={i['content']} datetime={i['time']}/>
                             </Grid>)
                     })}
                 </Grid>

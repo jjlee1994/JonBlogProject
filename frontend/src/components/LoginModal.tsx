@@ -25,9 +25,7 @@ function LoginModal(props: Props){
             username: state.username,
             password: state.password
         })
-        console.log('login')
-        if(response) {
-            console.log(response)
+        if(response.status == 200) {
             localStorage.setItem('access_token', response.data.access_token)
             props.setLoggedIn(true)
         }
@@ -52,7 +50,7 @@ function LoginModal(props: Props){
                         </Typography>
                         <TextField id="username" label="Username" fullWidth margin="normal" onChange={handleChange}/>
                         <TextField id="password" label="Password" fullWidth margin="normal" onChange={handleChange}/>
-                        <Button variant="contained" size="large" onClick={login}> Login </Button>
+                        <Button variant="contained" size="large" onClick={login} component={Link} to="/"> Login </Button>
                         <Typography>
                             Not yet a user? <a href="/signup">sign up</a>
                         </Typography>

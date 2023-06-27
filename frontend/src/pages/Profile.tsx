@@ -34,20 +34,22 @@ function Profile(){
 
     return (
         <div>
-            <Grid 
-                container
-                justifyContent="space-evenly"
-                alignItems="center"
-            >
-                {state.username && <ProfileCard username={state.username}/>}
-            </Grid>
-            <Grid item container spacing={2} justifyContent="space-evenly">
-                {state.posts.map((i)=>{
-                    return (                    
-                        <Grid item xs={12}>
-                            <PostCard username={i['username']} subject={i['subject']} content={i['content']}/>
-                        </Grid>)
-                })}
+            <Grid container spacing={2}>
+                <Grid 
+                    container
+                    justifyContent="space-evenly"
+                    alignItems="center"
+                >
+                    {state.username && <ProfileCard username={state.username}/>}
+                </Grid>
+                <Grid item container spacing={2} justifyContent="space-evenly">
+                    {state.posts.map((i)=>{
+                        return (                    
+                            <Grid item xs={12}>
+                                <PostCard username={i['username']} subject={i['subject']} content={i['content']} datetime={i['time']}/>
+                            </Grid>)
+                    })}
+                </Grid>
             </Grid>
         </div>
     )

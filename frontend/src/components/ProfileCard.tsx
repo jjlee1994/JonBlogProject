@@ -25,22 +25,29 @@ function ProfileCard(props : Props) {
                 alignItems="center"
             >
                 <Card sx={{
-                    midWidth: 600,
+                    minWidth: 600,
                     maxWidth: 600
                 }}>
-                        <Grid item container>
-                            <IconButton >
-                                    <Avatar
-                                        sx={{width: 160, height: 160}}
-                                    >
-                                        {props.username[0].toUpperCase()}
-                                    </Avatar>
-                            </IconButton>
-                            <Typography align="center" variant="h2">{props.username}</Typography>
-                            <Button variant="contained" onClick={follow}>Follow</Button>
+                        <Grid container>
+                            <Grid item container>
+                                <Grid item>
+                                    <IconButton>
+                                            <Avatar
+                                                sx={{width: 120, height: 120}}
+                                            >
+                                                {props.username[0].toUpperCase()}
+                                            </Avatar>
+                                    </IconButton>
+                                </Grid>
+                                <Grid item container justifyContent="flex-end">
+                                    <Button variant="contained" onClick={follow}>Follow</Button>
+                                </Grid>
+                            </Grid>
+                            <Grid item container alignItems="center">
+                                <Typography variant="h2">{props.username}</Typography>
+                            </Grid>
                         </Grid>
                 </Card> 
-
             </Grid>
         </div>
     )
