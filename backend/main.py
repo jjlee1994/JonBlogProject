@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, request
 
 app = Flask(__name__)
 
@@ -6,25 +6,43 @@ app = Flask(__name__)
 def hello_world():
     return {'msg': 'From one to America, how free are you tonight? Henry ;)'}, 200
 
-@app.route('/signup')
-def signup(User):
-    pass
+@app.route('/signup', methods=['POST'])
+def signup():
+    # take in data from request, make user object from data, return back first/last name
+    data = request.get_json()
+    u = User(first_name=data["first_name"], last_name=data["last_name"], username=data["username"], password=data["password"])
+    return {'msg': u.get_name()}, 200
 
-@app.route('/login')
-def login(username, password):
-    pass
+@app.route('/login', methods=['POST'])
+def login():
+    # 200 if successful login
+    # 400 if failure
+    u = User(first_name="henry3", last_name="lao3", username="H", password="asdf")
+    data = request.get_json()
+    if data["username"] == u.username and data["password"] == u.password:
+        return {'msg': "logged in"}, 200
+    else:
+        return {'msg': "fail"}, 400
 
 @app.route('/createpost')
 def create_post(Post):
     pass
 
+@app.route('/jon', methods=['GET', 'POST'])
+def jon():
+    data = request.get_json()
+    return {'sum': data['a'] + data['b']}, 200
+
 class User:
-    def __init__(self, username):
-        # self.first_name = 
-        # self.last_name = 
-        # self.username = username
-        # self.password = 
-        pass
+    def __init__(self, first_name, last_name, username, password):
+        self.first_name = first_name
+        self.last_name = last_name
+        self.username = username
+        self.password = password
+    
+    def get_name(self):
+        return self.first_name + " " + self.last_name
+        
 
 class Post:
     def __init__(self, post):
