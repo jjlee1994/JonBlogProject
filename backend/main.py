@@ -49,6 +49,9 @@ def signup():
 
     '''
     data = request.get_json()
+    profileLookup = Profile.query.filter_by(username=data['username']).first()
+    if profileLookup:
+        return {'msg': 'username already exists'}, 400
     profile = Profile(email=data['email'], username=data['username'], password=data['password'])
     db.session.add(profile)
     db.session.commit()
@@ -75,7 +78,6 @@ def login():
     
     '''
     data = request.get_json()
-    pw_hash = bcrypt.generate_password_hash(data['password']).decode('utf-8')
     profileLookup = Profile.query.filter_by(username=data['username']).first()
     if not profileLookup:
         return {'msg': 'user not found'}, 400
@@ -115,8 +117,8 @@ def create_post():
     db.session.commit()
     return {'msg': 'post created'}, 200
 
-@app.route('/post/<post_id>', methods=['GET'])
-def get_post(post_id):
+@app.route('/post', methods=['GET'])
+def get_post():
     '''
         Retrieve the requested post based on post id
 
@@ -136,7 +138,17 @@ def get_post(post_id):
                 }
             (404): Post with post_id cannot be found
     '''
-    pass
+    data = request.get_json()
+    postLookup = Post.query.filter_by(post_id=data['post_id']).first()
+    if not postLookup:
+        return {'msg': 'no posts found with id ' + data['post_id']}, 404
+    return {
+        'subject': postLookup.subject,
+        'content': postLookup.content,
+        'time': postLookup.time,
+        'owner': postLookup.profile.username
+        }, 200
+    
 
 class Profile(db.Model):
 
