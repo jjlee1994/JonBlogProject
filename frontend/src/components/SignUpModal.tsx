@@ -1,32 +1,57 @@
-import { Card, Button, CardContent, TextField, Typography } from "@mui/material"
-import Grid from '@mui/material/Unstable_Grid2';
-
+import { Grid, Card, CardContent, TextField, Typography, Link, Button } from '@mui/material';
 
 function SignUpModal(){
 
     return (
+
         <div>
-        <Grid
-            container
-            justifyContent="space-evenly"
-            direction="row"
-            alignItems="center"
-        >
-            <Card sx={{ minWidth: 275, maxWidth: 575 }} >
-                <CardContent >
-                    <Typography>
-                        Sign Up Modal
-                    </Typography>
-                    <TextField id="username" label="Username" fullWidth margin="normal"/>
-                    <TextField id="password" label="Password" fullWidth margin="normal"/>
-                    <Button variant="contained" size="large"> Sign Up </Button>
-                    <Typography>
-                        Did you mean to <a href="/login">login</a> instead?
-                    </Typography>
-                </CardContent>
-            </Card>
-        </Grid>
-    </div>
+            
+            <Grid
+                container
+                direction='column'
+                alignItems='center'
+                justifyContent='center'
+            >
+                <Card sx={{ maxWidth: 500 }}>
+                    
+                    <CardContent>
+
+                        <Grid container spacing={2}>
+
+                            <Grid item xs={12}>
+                                <TextField label='Username'/>
+                            </Grid>
+
+                            <Grid item xs={12}>
+                                <TextField label='Password'/>
+                            </Grid>
+
+                            <Grid item xs={12}>
+                                <TextField label='Email' />
+                            </Grid>
+
+                            <Grid item xs={12}>
+                                <Button variant='contained'>
+                                    Submit
+                                </Button>
+                            </Grid>
+
+                            <Grid item xs={12}>
+                                <Typography>
+                                    Did you mean to <Link href='/login'>login</Link>?
+                                </Typography>
+                            </Grid>
+
+                        </Grid>
+
+                    </CardContent>
+
+                </Card>
+
+            </Grid>
+
+        </div>
+
     )
 
 
