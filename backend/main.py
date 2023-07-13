@@ -8,11 +8,14 @@ from flask_jwt_extended import get_jwt_identity
 from flask_jwt_extended import jwt_required
 from flask_jwt_extended import JWTManager
 
+from flask_cors import CORS, cross_origin
+
 from datetime import datetime
 
 db = SQLAlchemy()
 app = Flask(__name__)
 bcrypt = Bcrypt(app)
+CORS(app)
 # configure the SQLite database, relative to the app instance folder
 app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://postgres:postgres@blog_project_db:5432/database"
 app.config["JWT_SECRET_KEY"] = "aaaaaaa"
@@ -22,10 +25,14 @@ db.init_app(app)
 migrate = Migrate(app, db)
 
 @app.route('/', methods=['POST'])
+@jwt_required()
 def hello_world():
-    print(request.get_json())
-    data = request.get_json()
-    print(data['hello'])
+    # print(request.get_json())
+    # data = request.get_json()
+    # print(data['hello'])
+    curUserId = get_jwt_identity()
+    profile = Profile.query.get(curUserId)
+    print(profile.username)
     return {'msg': 'From one to America, how free are you tonight? Henry ;)'}, 200
 
 @app.route('/signup', methods=['POST'])
@@ -83,11 +90,32 @@ def login():
         return {'msg': 'user not found'}, 400
     
     if bcrypt.check_password_hash(profileLookup.password, data['password']):
-        access_token = create_access_token(identity=profileLookup.username)
+        access_token = create_access_token(identity=profileLookup.id)
         return jsonify(access_token=access_token)
     else:
         return {'msg': 'user not found'}, 400
 
+@app.route('/param_post', methods=['GET'])
+def param_post():
+    args = request.args['address']
+    return {'msg': args}, 200
+
+@app.route('/multipost/', methods=['GET'])
+@app.route('/multipost/<username>/<id>', methods=['GET','POST','PUT','DELETE'])
+@jwt_required()
+def multipost(username=None, id=None):
+    if request.method == 'GET':
+        if id == None:
+            return {'msg': 'get all'}, 200
+        return {'username': username,
+                'id': id
+                }, 200
+    elif request.method == 'POST':
+        return {'msg': 'POST'}, 200
+    elif request.method == 'PUT':
+        return {'msg': 'PUT'}, 200
+    elif request.method == 'DELETE':
+        return {'msg': 'DELETE'}, 200
 
 @app.route('/createpost', methods=['POST'])
 def create_post():
@@ -117,7 +145,8 @@ def create_post():
     db.session.commit()
     return {'msg': 'post created'}, 200
 
-@app.route('/post', methods=['GET'])
+@app.route('/post', methods=['POST'])
+@jwt_required()
 def get_post():
     '''
         Retrieve the requested post based on post id
