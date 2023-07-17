@@ -97,7 +97,7 @@ def login():
 
 @app.route('/param_post', methods=['GET'])
 def param_post():
-    args = request.args['address']
+    args = request.args.get('zipcode','12345')
     return {'msg': args}, 200
 
 @app.route('/multipost/', methods=['GET'])
