@@ -1,7 +1,8 @@
 import { Avatar, Grid, Stack, Card, CardContent, CardHeader, Typography, TextField, Button } from '@mui/material'
 
 function UserPostEntryCard(){
-
+    // TODO:
+    // use token to create and read all users posts
     return (
 
         <div>

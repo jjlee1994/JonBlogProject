@@ -4,11 +4,24 @@ import MenuIcon from '@mui/icons-material/Menu';
 import { Box } from "@mui/system"
 import React, { useState } from "react";
 
-export interface authProps {
-    pageName : string
+
+
+
+function Navbar(){
+
+    return (
+        <Box sx={{flexGrow: 1}}>
+            <AppBar position ="static">
+                <AuthenticatedNavBar />
+                {/* <NonAuthenticatedNavBar/> */}
+            </AppBar>
+        </Box>
+    )
+
 }
 
-function AuthenticatedNavBar(props : authProps){
+
+function AuthenticatedNavBar(){
 
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
 
@@ -23,7 +36,7 @@ function AuthenticatedNavBar(props : authProps){
     return (
         <Toolbar>
             <Typography variant="h6" component="div" sx={{flexGrow: 1}}>
-                {props.pageName}
+                navbar
             </Typography>
             <IconButton
                 size="large"
@@ -73,19 +86,5 @@ function NonAuthenticatedNavBar(){
     )
 }
 
-
-function Navbar(){
-
-    return (
-        <Box sx={{flexGrow: 1}}>
-            <AppBar position ="static">
-                <AuthenticatedNavBar pageName={"PAGE NAME"}/>
-                {/* <NonAuthenticatedNavBar/> */}
-            </AppBar>
-        </Box>
-    )
-
-
-}
 
 export default Navbar

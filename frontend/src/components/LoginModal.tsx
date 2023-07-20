@@ -1,12 +1,17 @@
-import { Card, Button, CardContent, TextField, Typography } from "@mui/material"
+import { Card, Button, CardContent, TextField, Typography, Snackbar, Alert } from "@mui/material"
 import Grid from '@mui/material/Unstable_Grid2';
 import { useState } from "react";
 import axios from "axios";
+import { useNavigate } from 'react-router-dom'
+
 
 function LoginModal(){
 
     const [username, setUsername] = useState('')
     const [password, setPassword] = useState('')
+    const [isAlertOpen, setIsAlertOpen] = useState(false)
+    const [errorMsg, setErrorMsg] = useState('Error logging in')
+    const navigate = useNavigate()
 
     function handleUsernameChange(event:any){
         setUsername(event.target.value)
@@ -17,8 +22,8 @@ function LoginModal(){
     }
 
     async function handleLoginClick(){
-        console.log(username)
-        console.log(password)
+        console.log('username: ' + username)
+        console.log('password: ' + password)
         try {
             const response = await axios({
                 method: 'post',
@@ -29,10 +34,14 @@ function LoginModal(){
                 }
             })
             console.log(response.data);
-            window.location.href = 'http://localhost:3000/'
+            localStorage.setItem('access_token', 'Bearer ' + response.data.access_token)
+            console.log(localStorage.getItem('access_token'))
+            navigate('/')
         } catch (error) {
+            setIsAlertOpen(true)
             if (axios.isAxiosError(error)){
                 console.log(error.response?.data)
+                setErrorMsg(error.response?.data.msg)
             } else {
                 throw error
             }
@@ -41,6 +50,17 @@ function LoginModal(){
 
     return (
         <div>
+            <Snackbar 
+                open={isAlertOpen}
+                anchorOrigin={{ 
+                    vertical: 'top',
+                    horizontal: 'center' 
+                }}
+            >
+                <Alert severity="error">
+                    {errorMsg}
+                </Alert>
+            </Snackbar>
             <Grid
                 container
                 justifyContent="space-evenly"
@@ -58,13 +78,10 @@ function LoginModal(){
                         <Typography>
                             Not yet a user? <a href="/signup">sign up</a>
                         </Typography>
-
-
-
                     </CardContent>
                 </Card>
             </Grid>
-    </div>
+        </div>
     )
 
 

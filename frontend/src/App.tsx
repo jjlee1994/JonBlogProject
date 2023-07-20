@@ -1,4 +1,5 @@
 import React from 'react';
+import { useState } from 'react';
 import {
   Routes,
   Route,
@@ -9,8 +10,11 @@ import Home from './pages/Home';
 import Authentication from './pages/Authentication';
 import Navbar from './components/Navbar';
 import Profile from './pages/Profile';
+import { Button } from '@mui/material';
 
 function App() {
+
+
   return (
     <div className="App">
       <header className="App-header">

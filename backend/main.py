@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import desc
 from flask_migrate import Migrate
 from flask_bcrypt import Bcrypt
 
@@ -11,6 +12,7 @@ from flask_jwt_extended import JWTManager
 from flask_cors import CORS, cross_origin
 
 from datetime import datetime
+
 
 db = SQLAlchemy()
 app = Flask(__name__)
@@ -24,6 +26,7 @@ jwt = JWTManager(app)
 db.init_app(app)
 migrate = Migrate(app, db)
 
+
 @app.route('/', methods=['POST'])
 @jwt_required()
 def hello_world():
@@ -34,6 +37,7 @@ def hello_world():
     profile = Profile.query.get(curUserId)
     print(profile.username)
     return {'msg': 'From one to America, how free are you tonight? Henry ;)'}, 200
+
 
 @app.route('/signup', methods=['POST'])
 def signup():
@@ -63,6 +67,7 @@ def signup():
     db.session.add(profile)
     db.session.commit()
     return {'msg': 'successful signup'}, 200
+
 
 @app.route('/login', methods=['POST'])
 def login():
@@ -95,10 +100,12 @@ def login():
     else:
         return {'msg': 'user not found'}, 400
 
+
 @app.route('/param_post', methods=['GET'])
 def param_post():
     args = request.args.get('zipcode','12345')
     return {'msg': args}, 200
+
 
 @app.route('/multipost/', methods=['GET'])
 @app.route('/multipost/<username>/<id>', methods=['GET','POST','PUT','DELETE'])
@@ -117,7 +124,9 @@ def multipost(username=None, id=None):
     elif request.method == 'DELETE':
         return {'msg': 'DELETE'}, 200
 
+
 @app.route('/createpost', methods=['POST'])
+@jwt_required()
 def create_post():
     '''
         This route creates new post for the user
@@ -140,10 +149,12 @@ def create_post():
         return {'msg': 'subject cannot be empty'}, 400
     if data['content'].strip() == '':
         return {'msg': 'content cannot be empty'}, 400
-    postData = Post(subject=data['subject'], content=data['content'], ownerId=data['ownerId'])
+    curUserId = get_jwt_identity()
+    postData = Post(subject=data['subject'], content=data['content'], ownerId=curUserId)
     db.session.add(postData)
     db.session.commit()
     return {'msg': 'post created'}, 200
+
 
 @app.route('/post', methods=['POST'])
 @jwt_required()
@@ -177,6 +188,25 @@ def get_post():
         'time': postLookup.time,
         'owner': postLookup.profile.username
         }, 200
+
+
+@app.route('/get_user_posts', methods=['POST'])
+@jwt_required()
+def get_user_posts():
+    curUserId = get_jwt_identity()
+    postsLookup = Post.query.filter_by(owner=curUserId).order_by(desc('time')).all()
+    if len(postsLookup) == 0:
+        return {'msg': 'no posts found for user with id ' + str(curUserId)}, 200
+    posts = []
+    for post in postsLookup:
+        dictObj = {
+            'post_id': post.__dict__['post_id'],
+            'subject': post.__dict__['subject'],
+            'content': post.__dict__['content'],
+            'time': post.__dict__['time'].strftime('%m/%d/%Y %H:%M:%S')
+        }
+        posts.append(dictObj)
+    return {'data': posts}, 200
     
 
 class Profile(db.Model):

@@ -3,7 +3,7 @@ import LoginModal from "../components/LoginModal";
 import SignUpModal from "../components/SignUpModal";
 
 export interface Props {
-    type: string;
+    type: string,
 }
 
 function Authentication(props : Props){
@@ -13,7 +13,7 @@ function Authentication(props : Props){
         return (
 
             <div style={{textAlign: "center"}}>
-                <LoginModal/>
+                <LoginModal />
             </div>
         )
     else
