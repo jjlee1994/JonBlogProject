@@ -190,6 +190,19 @@ def get_post():
         }, 200
 
 
+@app.route('/get_user', methods=['POST'])
+@jwt_required()
+def get_user():
+    curUserId = get_jwt_identity()
+    userLookup = Profile.query.filter_by(id=curUserId).first()
+    user = {
+        'id': userLookup.__dict__['id'],
+        'username': userLookup.__dict__['username'],
+        'email': userLookup.__dict__['email']
+    }
+    return {'data': user}, 200
+
+
 @app.route('/get_user_posts', methods=['POST'])
 @jwt_required()
 def get_user_posts():

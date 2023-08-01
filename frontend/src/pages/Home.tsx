@@ -5,9 +5,18 @@ import axios from 'axios'
 import { useState, useEffect } from "react"
 import { getuid } from "process"
 
-function Home(){
 
-    const [userPosts, setUserPosts] = useState({
+export interface AppProps {
+    isLoggedIn: boolean,
+    userId: string,
+    username: string,
+    email: string,
+    getUserInfo: any
+}
+
+function Home(props: AppProps){
+
+    const [state, setState] = useState({
         posts: []
     })
 
@@ -19,22 +28,24 @@ function Home(){
                 'Authorization': localStorage.getItem('access_token')
             }
         })
-        setUserPosts({
+        setState({
             posts: response.data.data
         })
-        console.log(userPosts.posts)
-        console.log(response.data.data)
     }
 
     useEffect(()=>{
         getUserPosts()
+        props.getUserInfo()
     },[])
 
     // TODO: return all users posts as post cards
     // pass down props to display actual content
     return (
         <div>
-            <Button onClick={()=>{console.log(userPosts)}}>
+            <Button onClick={()=>{console.log(state)}}>
+                log state
+            </Button>
+            <Button onClick={()=>{console.log(props)}}>
                 log state
             </Button>
             <Grid

@@ -5,15 +5,21 @@ import { Box } from "@mui/system"
 import React, { useState } from "react";
 
 
+export interface navbarProps {
+    isloggedIn: boolean,
+    username: string
+}
 
-
-function Navbar(){
+function Navbar(props: navbarProps){
 
     return (
         <Box sx={{flexGrow: 1}}>
             <AppBar position ="static">
-                <AuthenticatedNavBar />
-                {/* <NonAuthenticatedNavBar/> */}
+                {
+                    props.isloggedIn ? 
+                    <AuthenticatedNavBar isloggedIn={props.isloggedIn} username={props.username} /> : 
+                    <NonAuthenticatedNavBar/> 
+                } 
             </AppBar>
         </Box>
     )
@@ -21,7 +27,7 @@ function Navbar(){
 }
 
 
-function AuthenticatedNavBar(){
+function AuthenticatedNavBar(props: navbarProps){
 
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
 
@@ -36,7 +42,7 @@ function AuthenticatedNavBar(){
     return (
         <Toolbar>
             <Typography variant="h6" component="div" sx={{flexGrow: 1}}>
-                navbar
+                {props.username}
             </Typography>
             <IconButton
                 size="large"
