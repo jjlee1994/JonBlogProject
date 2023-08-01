@@ -3,11 +3,13 @@ import { AppBar, Button, Toolbar, Typography, IconButton, MenuItem, Menu } from 
 import MenuIcon from '@mui/icons-material/Menu';
 import { Box } from "@mui/system"
 import React, { useState } from "react";
+import { useNavigate } from 'react-router-dom'
 
 
 export interface navbarProps {
     isloggedIn: boolean,
-    username: string
+    username: string,
+    setAppState: any,
 }
 
 function Navbar(props: navbarProps){
@@ -17,7 +19,7 @@ function Navbar(props: navbarProps){
             <AppBar position ="static">
                 {
                     props.isloggedIn ? 
-                    <AuthenticatedNavBar isloggedIn={props.isloggedIn} username={props.username} /> : 
+                    <AuthenticatedNavBar setAppState={props.setAppState} isloggedIn={props.isloggedIn} username={props.username} /> : 
                     <NonAuthenticatedNavBar/> 
                 } 
             </AppBar>
@@ -25,7 +27,6 @@ function Navbar(props: navbarProps){
     )
 
 }
-
 
 function AuthenticatedNavBar(props: navbarProps){
 
@@ -37,6 +38,19 @@ function AuthenticatedNavBar(props: navbarProps){
 
     const handleClose = () => {
         setAnchorEl(null)
+    }
+
+    const navigate = useNavigate()
+
+    function logUserOut(){
+        localStorage.removeItem('access_token')
+        props.setAppState({
+            isLoggedIn: false,
+            userId: '',
+            username: '',
+            email: ''
+        })
+        navigate('/')
     }
 
     return (
@@ -52,7 +66,7 @@ function AuthenticatedNavBar(props: navbarProps){
                 sx={{ mr: 2 }}
                 onClick={handleMenu}
             >
-                <MenuIcon/>
+            <MenuIcon/>
             </IconButton>
             <Menu
                 id="menu-appbar"
@@ -71,9 +85,8 @@ function AuthenticatedNavBar(props: navbarProps){
             >
                 <MenuItem> Home </MenuItem>
                 <MenuItem> Profile </MenuItem>
-                <MenuItem> Log Out </MenuItem>
+                <MenuItem onClick={logUserOut} > Log Out </MenuItem>
             </Menu>
-
         </Toolbar>
     )
 

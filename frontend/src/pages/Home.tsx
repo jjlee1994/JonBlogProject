@@ -1,4 +1,4 @@
-import { Grid, Button } from "@mui/material"
+import { Grid, Button, Typography } from "@mui/material"
 import PostCard from "../components/PostCard"
 import UserPostEntryCard from "../components/UserPostEntryCard"
 import axios from 'axios'
@@ -34,9 +34,36 @@ function Home(props: AppProps){
     }
 
     useEffect(()=>{
-        getUserPosts()
-        props.getUserInfo()
+        if (localStorage.getItem('access_token') != null){
+            getUserPosts()
+            props.getUserInfo()
+        }
     },[])
+
+    if (!props.isLoggedIn){
+        return (
+            <Grid 
+                container
+                direction='column'
+                alignItems='center'
+                justifyContent='center'
+            >
+                <Grid item>
+                    <Typography variant='h2'>
+                        Welcome to my blog project
+                    </Typography>
+                </Grid>
+                <Grid item>
+                <Button href='/login'>
+                    Log in
+                </Button>
+                <Button href='/signup'>
+                    Sign up
+                </Button>
+                </Grid>
+            </Grid>
+        )
+    }
 
     // TODO: return all users posts as post cards
     // pass down props to display actual content
@@ -68,7 +95,6 @@ function Home(props: AppProps){
                         )
                     })
                 } */}
-                
             </Grid>
         </div>
     )

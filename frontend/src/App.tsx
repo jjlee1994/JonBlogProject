@@ -46,7 +46,9 @@ function App() {
   }
 
   useEffect(()=>{
-    getUserInfo()
+    if (localStorage.getItem('access_token') != null){
+      getUserInfo()
+    }
   },[])
 
   return (
@@ -56,18 +58,17 @@ function App() {
           rel="stylesheet"
           href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
         />
-        <Navbar isloggedIn={state.isLoggedIn} username={state.username} />
+        <Navbar setAppState={setState} isloggedIn={state.isLoggedIn} username={state.username} />
       </header>
       <body>
         <Routes>
-          <Route path="/" element={<Home getUserInfo={()=>getUserInfo()} isLoggedIn={state.isLoggedIn} userId={state.userId} username={state.username} email={state.email} />}/>
+          <Route path="/" element={<Home getUserInfo={getUserInfo} isLoggedIn={state.isLoggedIn} userId={state.userId} username={state.username} email={state.email} />}/>
           <Route path="/login" element={<Authentication type="login"/>}/>
           <Route path="/signup" element={<Authentication type="signup"/>}/>
           <Route path="/profile" element={<Profile/>}/>
-          <Route path="/home" element={<Home getUserInfo={()=>getUserInfo()} isLoggedIn={state.isLoggedIn} userId={state.userId} username={state.username} email={state.email} />}/>
+          <Route path="/home" element={<Home getUserInfo={getUserInfo} isLoggedIn={state.isLoggedIn} userId={state.userId} username={state.username} email={state.email} />}/>
         </Routes>
       </body>
-
     </div>
   );
 }
