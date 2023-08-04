@@ -28,9 +28,11 @@ function Home(props: AppProps){
                 'Authorization': localStorage.getItem('access_token')
             }
         })
-        setState({
-            posts: response.data.data
-        })
+        if (response.data.data.length > 0){
+            setState({
+                posts: response.data.data
+            })
+        }
     }
 
     useEffect(()=>{
@@ -83,14 +85,15 @@ function Home(props: AppProps){
                 <Grid item>
                     <UserPostEntryCard username={props.username} getUserPosts={getUserPosts} />
                 </Grid>
-                {
+
+                {   
                     state.posts.map((i:any) => {
                         return (
                             <Grid item>
                                 <PostCard content={i.content} username={props.username}/>
                             </Grid>
                         )
-                    }) 
+                    })
                 }
 
             </Grid>

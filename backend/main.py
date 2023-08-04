@@ -209,7 +209,7 @@ def get_user_posts():
     curUserId = get_jwt_identity()
     postsLookup = Post.query.filter_by(owner=curUserId).order_by(desc('time')).all()
     if len(postsLookup) == 0:
-        return {'msg': 'no posts found for user with id ' + str(curUserId)}, 200
+        return {'data': []}, 200
     posts = []
     for post in postsLookup:
         dictObj = {
