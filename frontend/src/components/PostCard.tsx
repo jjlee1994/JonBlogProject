@@ -1,6 +1,12 @@
 import { Avatar, Grid, Stack, Card, CardContent, Typography } from '@mui/material'
 
-function PostCard(){
+
+export interface PostCardProps {
+    content: string,
+    username: string
+}
+
+function PostCard(props: PostCardProps){
 
     return (
 
@@ -15,14 +21,16 @@ function PostCard(){
                     <CardContent>
                         <Stack direction='column' spacing={2}>
                             <Stack direction='row' spacing={2}>
-                                <Avatar>U</Avatar>
+                                <Avatar>
+                                    {props.username[0]}
+                                </Avatar>
                                 <Typography>
-                                    Username
+                                    {props.username}
                                 </Typography>
                             </Stack>
                             <Card>
                                 <Typography sx={{ margin: 3 }}>
-                                    Post ContentPost ContentPost ContentPost ContentPost ContentPost ContentPost ContentPost ContentPost ContentPost ContentPost ContentPost Content
+                                    {props.content}
                                 </Typography>
                             </Card>
                         </Stack>

@@ -65,8 +65,6 @@ function Home(props: AppProps){
         )
     }
 
-    // TODO: return all users posts as post cards
-    // pass down props to display actual content
     return (
         <div>
             <Button onClick={()=>{console.log(state)}}>
@@ -83,18 +81,18 @@ function Home(props: AppProps){
                 spacing={2}
             >
                 <Grid item>
-                    <UserPostEntryCard/>
+                    <UserPostEntryCard username={props.username} getUserPosts={getUserPosts} />
                 </Grid>
-
-                {/* {
-                    userPosts.posts.map((i:any) => {
-                        return(
+                {
+                    state.posts.map((i:any) => {
+                        return (
                             <Grid item>
-                                {i}
+                                <PostCard content={i.content} username={props.username}/>
                             </Grid>
                         )
-                    })
-                } */}
+                    }) 
+                }
+
             </Grid>
         </div>
     )
