@@ -1,10 +1,10 @@
-import { Avatar, Button, Grid, Card, CardHeader, CardContent, Typography } from '@mui/material'
+import { Avatar, Button, Stack, Grid, Card, CardHeader, CardContent, Typography } from '@mui/material'
 import { useNavigate } from 'react-router-dom'
-import { useEffect } from 'react'
 
 
 export interface ProfileCardProps {
     isLoggedIn: boolean,
+    isOwnUserPage: boolean,
     username: string
 }
 
@@ -12,10 +12,31 @@ function ProfileCard(props: ProfileCardProps){
 
     const navigate = useNavigate()
 
+    // on /profile page refresh:
+    // triggers initial render App->Profile, App state is not set (username = '')
+    // then useEffect is called in App after finish rendered and App state is set
+    // then Profile gets rendered because App state updated
+    if (props.username == ''){
+        console.log('rendered </>')
+        return (
+            <div>
+                <Grid
+                    container
+                    justifyContent='center'
+                >
+                    <Grid item>
+                        <Typography variant="h5">
+                            User not logged in. <a href='/login'>Login here</a>
+                        </Typography>
+                    </Grid>
+                </Grid>
+            </div>
+        )
+    }
+
     return (
 
         <div>
-
             <Grid
                 container
                 direction='column'
@@ -32,6 +53,11 @@ function ProfileCard(props: ProfileCardProps){
                         title = {
                             props.username
                         }
+                        action = {
+                            props.isLoggedIn ?
+                            props.isOwnUserPage ? '' :
+                            <Button variant='outlined'>Follow</Button> : ''
+                        }
                     />
                     <CardContent>
                         <Typography sx={{ margin: 3 }}>
@@ -40,7 +66,6 @@ function ProfileCard(props: ProfileCardProps){
                     </CardContent>
                 </Card>
             </Grid>
-
         </div>
 
     )

@@ -48,7 +48,7 @@ function App() {
   }
 
   useEffect(()=>{
-    if (localStorage.getItem('access_token') != null){
+    if (localStorage.getItem('access_token') != null) {
       getUserInfo()
     }
   },[])

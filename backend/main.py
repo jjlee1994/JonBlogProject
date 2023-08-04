@@ -220,7 +220,17 @@ def get_user_posts():
         }
         posts.append(dictObj)
     return {'data': posts}, 200
-    
+
+
+@app.route('/lookup_user', methods=['POST'])
+def lookup_user():
+    data = request.get_json()
+    userLookup = Profile.query.filter_by(username=data['username']).first()
+    if userLookup:
+        return {'username': userLookup.username}, 200
+    else:
+        return {'username': ''}, 404
+
 
 class Profile(db.Model):
 
