@@ -69,12 +69,12 @@ function Home(props: AppProps){
 
     return (
         <div>
-            <Button onClick={()=>{console.log(state)}}>
+            {/* <Button onClick={()=>{console.log(state)}}>
                 log state
             </Button>
             <Button onClick={()=>{console.log(props)}}>
                 log state
-            </Button>
+            </Button> */}
             <Grid
                 container
                 direction='column'

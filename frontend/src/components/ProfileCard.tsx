@@ -1,23 +1,45 @@
-import { Avatar, Button, Card, CardContent, Typography } from '@mui/material'
+import { Avatar, Button, Grid, Card, CardHeader, CardContent, Typography } from '@mui/material'
+import { useNavigate } from 'react-router-dom'
+import { useEffect } from 'react'
 
-function ProfileCard(){
+
+export interface ProfileCardProps {
+    isLoggedIn: boolean,
+    username: string
+}
+
+function ProfileCard(props: ProfileCardProps){
+
+    const navigate = useNavigate()
 
     return (
 
         <div>
 
-            <Card sx={{ maxWidth: 275 }}>
-                <CardContent>
-                    <Avatar>N</Avatar>
-                    <Typography>
-                        Username
-                    </Typography>
-                    <Typography>
-                        Email
-                    </Typography>
-                    <Button>Edit</Button>
-                </CardContent>
-            </Card>
+            <Grid
+                container
+                direction='column'
+                alignItems='center'
+                justifyContent='center'
+            >
+                <Card sx={{ minWidth: 400, maxWidth: 400 }}>
+                    <CardHeader
+                        avatar = {
+                            <Avatar>
+                                {props.username[0].toUpperCase()}
+                            </Avatar>
+                        }
+                        title = {
+                            props.username
+                        }
+                    />
+                    <CardContent>
+                        <Typography sx={{ margin: 3 }}>
+                            {props.username}
+                        </Typography>
+                    </CardContent>
+                </Card>
+            </Grid>
 
         </div>
 

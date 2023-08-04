@@ -2,7 +2,7 @@ import React from 'react';
 import { useState, useEffect } from 'react';
 import {
   Routes,
-  Route,
+  Route
 } from "react-router-dom";
 import axios from 'axios'
 import './App.css';
@@ -11,6 +11,7 @@ import Authentication from './pages/Authentication';
 import Navbar from './components/Navbar';
 import Profile from './pages/Profile';
 import { Button } from '@mui/material';
+import { get } from 'http';
 
 
 function App() {
@@ -23,6 +24,7 @@ function App() {
   })
 
   async function getUserInfo(){
+    console.log('calling getUserInfo()')
     const response = await axios({
         method: 'post',
         url: 'http://localhost:5001/get_user',
@@ -65,8 +67,9 @@ function App() {
           <Route path="/" element={<Home getUserInfo={getUserInfo} isLoggedIn={state.isLoggedIn} userId={state.userId} username={state.username} email={state.email} />}/>
           <Route path="/login" element={<Authentication type="login"/>}/>
           <Route path="/signup" element={<Authentication type="signup"/>}/>
-          <Route path="/profile" element={<Profile/>}/>
+          <Route path="/profile" element={<Profile isLoggedIn={state.isLoggedIn} username={state.username} userId={state.userId} />}/>
           <Route path="/home" element={<Home getUserInfo={getUserInfo} isLoggedIn={state.isLoggedIn} userId={state.userId} username={state.username} email={state.email} />}/>
+          <Route path="/:username" element={<Profile isLoggedIn={state.isLoggedIn} username={state.username} userId={state.userId} />} />
         </Routes>
       </body>
     </div>

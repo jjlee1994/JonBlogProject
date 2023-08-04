@@ -83,8 +83,8 @@ function AuthenticatedNavBar(props: navbarProps){
                 open={Boolean(anchorEl)}
                 onClose={handleClose}
             >
-                <MenuItem> Home </MenuItem>
-                <MenuItem> Profile </MenuItem>
+                <MenuItem onClick={()=>{navigate('/home')}}> Home </MenuItem>
+                <MenuItem onClick={()=>{navigate('/profile')}}> Profile </MenuItem>
                 <MenuItem onClick={logUserOut} > Log Out </MenuItem>
             </Menu>
         </Toolbar>
