@@ -80,7 +80,7 @@ function Home(props: AppProps){
                 direction='column'
                 alignItems='center'
                 justifyContent='center'
-                spacing={2}
+                spacing={3}
             >
                 <Grid item>
                     <UserPostEntryCard username={props.username} getUserPosts={getUserPosts} />
@@ -90,7 +90,7 @@ function Home(props: AppProps){
                     state.posts.map((i:any) => {
                         return (
                             <Grid item>
-                                <PostCard content={i.content} username={props.username}/>
+                                <PostCard content={i.content} username={props.username} postDatetime={i.time} />
                             </Grid>
                         )
                     })

@@ -50,36 +50,26 @@ function UserPostEntryCard(props: UserPostEntryCardProps){
 
     return (
 
-        <div>
-            <Grid
-                container
-                direction='column'
-                alignItems='center'
-                justifyContent='center'
-            >
-                <Card sx={{ maxWidth: 500 }}>
-                    <CardContent>
-                        <Stack direction='column' spacing={2}>
-                            <Stack direction='row' spacing={2}>
-                                <Avatar>
-                                    {props.username[0]}
-                                </Avatar>
-                                <Typography>
-                                    {props.username}
-                                </Typography>
-                            </Stack>
-                            <Stack direction='row' spacing={2}>
-                                <TextField label='Enter Post' value={state.postContent} onChange={handlePostContentChange} />
-                                <Button variant='outlined' onClick={handlePostSubmitClick}>Submit</Button>
-                            </Stack>
-                        </Stack>
-                    </CardContent>
-                </Card>
-            </Grid>
-        </div>
+        <Card sx={{ minWidth: 400, maxWidth: 400 }}>
+            <CardHeader
+                avatar = {
+                    <Avatar>
+                        {props.username[0].toUpperCase()}
+                    </Avatar>
+                }
+                title = {
+                    props.username
+                }
+            />
+            <CardContent>
+                <Stack direction='row' justifyContent='center' spacing={2}>
+                    <TextField label='Enter Post' value={state.postContent} onChange={handlePostContentChange} />
+                    <Button variant='outlined' onClick={handlePostSubmitClick}>Submit</Button>
+                </Stack>
+            </CardContent>
+        </Card>
 
     )
-
 }
 
 export default UserPostEntryCard
